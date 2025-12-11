@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Invoice Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .sidebar {
+      width: 16rem;
+      transform: translateX(0);
+      transition: transform 0.3s ease-in-out;
+    }
+    .sidebar-hidden {
+      transform: translateX(-16rem);
+    }
+    .sidebar-minimized {
+      width: 5rem !important;
+    }
+    .sidebar-minimized h2,
+    .sidebar-minimized span,
+    .sidebar-minimized .text-lg,
+    .sidebar-minimized .text-xl,
+    .sidebar-minimized .font-semibold,
+    .sidebar-minimized .font-bold {
+      display: none;
+    }
+    .sidebar-minimized nav a {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .sidebar-minimized nav a i {
+      margin-right: 0;
+    }
+    .main-content {
+      margin-left: 16rem;
+      transition: margin-left 0.3s ease-in-out;
+    }
+    .main-content-full {
+      margin-left: 0;
+    }
+    .sidebar-icon {
+      transition: transform 0.3s ease;
+    }
+    .sidebar-open .sidebar-icon {
+      transform: rotate(180deg);
+    }
+  </style>
+  <script>
+    function calculateTotal() {
+      let subtotal = 0;
+      let itemsArray = [];
+  
+      document.querySelectorAll("#items div").forEach(row => {
+        const itemName = row.children[0].value;
+        const quantity = parseFloat(row.children[1].value) || 0;
+        const price = parseFloat(row.children[2].value) || 0;
+  
+        if (itemName && quantity > 0 && price > 0) {
+          itemsArray.push({ name: itemName, quantity, price });
+        }
+  
+        subtotal += quantity * price;
+      });
+  
+      const taxRate = parseFloat(document.getElementById("tax").value) || 0;
+      const discountRate = parseFloat(document.getElementById("discount_rate").value) || 0;
+  
+      const discount = (subtotal * discountRate) / 100;
+      const discountedSubtotal = subtotal - discount;
+      const taxAmount = (discountedSubtotal * taxRate) / 100;
+      const total = discountedSubtotal + taxAmount;
+  
+      document.getElementById("subtotal_display").textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById("discount_display").textContent = `$${discount.toFixed(2)}`;
+      document.getElementById("taxAmount_display").textContent = `$${taxAmount.toFixed(2)}`;
+      document.getElementById("total_display").textContent = `$${total.toFixed(2)}`;
+  
+      document.getElementById("subtotal").value = subtotal.toFixed(2);
+      document.getElementById("discount").value = discount.toFixed(2);
+      document.getElementById("taxAmount").value = taxAmount.toFixed(2);
+      document.getElementById("total").value = total.toFixed(2);
+      document.getElementById("items_data").value = JSON.stringify(itemsArray);
+    }
+  
+    function addItem() {
+      const itemContainer = document.getElementById("items");
+      const itemRow = document.createElement("div");
+      itemRow.classList.add("flex", "space-x-4", "mb-2");
+      itemRow.innerHTML = `
+        <input type="text" class="w-1/3 px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Item Name">
+        <input type="number" class="w-1/4 px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Quantity" oninput="calculateTotal()">
+        <input type="number" class="w-1/4 px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Price" oninput="calculateTotal()">
+        <button title="Remove item" type="button" class="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition" onclick="removeItem(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      itemContainer.appendChild(itemRow);
+    }
+  
+    function removeItem(button) {
+      button.parentElement.remove();
+      calculateTotal();
+    }
+  
+    function toggleDropdown() {
+      const dropdown = document.getElementById("dropdownMenu");
+      dropdown.classList.toggle("hidden");
+    }
+  
+    document.addEventListener('DOMContentLoaded', function () {
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('mainContent');
+  
+      let sidebarOpen = true;
+  
+      function toggleSidebar() {
+        sidebarOpen = !sidebarOpen;
+  
+        if (sidebarOpen) {
+          sidebar.classList.remove('sidebar-hidden');
+          mainContent.classList.remove('main-content-full');
+          mainContent.classList.add('main-content');
+          sidebarToggle.classList.add('sidebar-open');
+        } else {
+          sidebar.classList.add('sidebar-hidden');
+          mainContent.classList.remove('main-content');
+          mainContent.classList.add('main-content-full');
+          sidebarToggle.classList.remove('sidebar-open');
+        }
+      }
+  
+      sidebarToggle.addEventListener('click', toggleSidebar);
+  
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById("dropdownMenu");
+        const profileContainer = document.querySelector(".profile-container");
+        
+        if (!profileContainer.contains(event.target)) {
+          dropdown.classList.add("hidden");
+        }
+      });
+  
+      fetch('get_user.php')
+        .then(response => response.json())
+        .then(data => {
+          const usernameDisplay = document.getElementById("usernameDisplay");
+          if (data.user_name) {
+            usernameDisplay.textContent = data.user_name;
+          } else {
+            usernameDisplay.textContent = "Guest";
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching user name:', error);
+          document.getElementById("usernameDisplay").textContent = "Guest";
+        });
+  
+      addItem(); // Add first item
+    });
+  </script>
+  
+</head>
+
+<body class="bg-black text-white font-sans">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar bg-gray-900 text-white p-6 space-y-6 fixed h-screen shadow-lg">
+      <h2 class="text-3xl font-bold mb-4">Billing Panel</h2>
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-home"></i> <span>Home</span>
+        </a>
+        <a href="reports.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-chart-line"></i> <span>Reports</span>
+        </a>
+        <a href="invoice.html" class="flex items-center gap-3 py-2 px-4 bg-blue-600 rounded transition">
+          <i class="fas fa-file-invoice-dollar"></i> <span>Invoice</span>
+        </a>
+        <a href="settings.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-cogs"></i> <span>User Settings</span>
+        </a>
+        <a href="about.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-info-circle"></i> <span>About Us</span>
+        </a>
+      </nav>
+    </div>
+    
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content flex-1 p-6 overflow-y-auto h-screen bg-gray-950">
+      <div class="flex justify-between items-center bg-gray-900 p-4 rounded-lg shadow mb-6">
+        <div class="flex items-center gap-4">
+          <!-- Sidebar Toggle Button -->
+          <button id="sidebarToggle" class="text-white bg-gray-800 border border-gray-700 p-2 rounded-md hover:bg-gray-700 transition">
+            <i class="fas fa-bars sidebar-icon"></i>
+          </button>
+          <h1 class="text-2xl font-semibold">Invoice Generator</h1>
+        </div>
+
+        <div class="relative flex items-center space-x-2 profile-container" onclick="toggleDropdown()">
+          <div class="flex items-center cursor-pointer hover:text-blue-400 transition">
+            <i class="fas fa-user-circle text-xl mr-2"></i>
+            <span id="usernameDisplay" class="font-medium">Loading...</span>
+            <i class="fas fa-chevron-down text-xs ml-1 mt-1"></i>
+          </div>
+          <div id="dropdownMenu" class="absolute right-0 top-10 w-32 bg-gray-800 border border-gray-700 rounded-md shadow-lg hidden z-50 py-1">
+            <a href="logout.php" class="block px-3 py-1 text-sm text-white hover:bg-gray-700 transition">Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gray-900 p-6 rounded-lg shadow">
+        <form action="invoice.php" method="POST" onsubmit="prepareInvoiceData(event)">
+          <div class="mb-4">
+            <label class="block text-gray-300 font-medium">Client Name</label>
+            <input type="text" name="client_name"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Enter client name"
+              required>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-300 font-medium">Address</label>
+            <input type="text" name="client_address"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" rows="2"
+              placeholder="Enter client address" required>  
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-300 font-medium">Phone Number</label>
+            <input type="tel" name="client_phone"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Enter phone number"
+              required pattern="[0-9]{10}">
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-300 font-medium">Pin Code</label>
+            <input type="text" name="client_pincode"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Enter pin code" required
+              pattern="[0-9]{6}">
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-300 font-medium">City</label>
+            <input type="text" name="client_city"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Enter city name" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-300 font-medium">State</label>
+            <input type="text" name="client_state"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Enter state name"
+              required>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-300 font-medium">Invoice Date</label>
+            <input type="date" name="invoice_date"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" required>
+          </div>
+
+          <h3 class="text-lg font-semibold mt-6 text-white">Items</h3>
+          <div id="items" class="space-y-2"></div>
+          <button type="button" onclick="addItem()"
+            title="Add item" class="bg-green-600 text-white px-4 py-2 rounded-lg mt-2 hover:bg-green-700 transition">
+            <i class="fas fa-plus "></i>
+          </button>
+
+          <div class="mt-6">
+            <label class="block text-gray-300 font-medium">Tax Rate (%)</label>
+            <input type="number" id="tax" name="tax_rate"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Enter tax rate"
+              oninput="calculateTotal()" required>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-gray-300 font-medium">Discount (%)</label>
+            <input type="number" id="discount_rate" name="discount_rate"
+              class="w-full px-4 py-2 border rounded-lg bg-gray-800 text-white" placeholder="Enter discount rate"
+              oninput="calculateTotal()" value="0">
+          </div>
+
+          <div class="mt-4 bg-gray-800 p-4 rounded-lg text-white">
+            <p>Subtotal: <span id="subtotal_display">$0.00</span></p>
+            <p>Discount: <span id="discount_display">$0.00</span></p>
+            <p>Tax: <span id="taxAmount_display">$0.00</span></p>
+            <p class="text-lg font-semibold">Total: <span id="total_display">$0.00</span></p>
+
+            <input type="hidden" name="subtotal" id="subtotal">
+            <input type="hidden" name="discount" id="discount">
+            <input type="hidden" name="taxAmount" id="taxAmount">
+            <input type="hidden" name="total" id="total">
+            <input type="hidden" name="items" id="items_data">
+          </div>
+
+          <button type="submit" title="Generate Invoice"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg mt-6 hover:bg-blue-700 transition">Generate
+            Invoice</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

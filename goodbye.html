@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Goodbye</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Floating animation for emoji */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Pulsing text animation */
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Animated background gradient */
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .pulsing {
+      animation: pulseSoft 2s ease-in-out infinite;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background-color: rgba(255, 255, 255, 0.15);
+      position: absolute;
+      animation: pulseSoft 4s ease-in-out infinite;
+    }
+
+    .background-animation {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(-45deg, #1e3a8a, #4b5563, #1f2937, #111827);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body class="bg-black text-white flex flex-col items-center justify-center h-screen overflow-hidden relative">
+
+  <!-- Animated Background -->
+  <div class="background-animation"></div>
+
+  <!-- Floating Decorative Dots -->
+  <div class="dot" style="top: 20%; left: 10%;"></div>
+  <div class="dot" style="top: 40%; left: 85%;"></div>
+  <div class="dot" style="top: 75%; left: 30%;"></div>
+  <div class="dot" style="top: 60%; left: 60%;"></div>
+  <div class="dot" style="top: 10%; left: 75%;"></div>
+
+  <!-- Main Content -->
+  <div class="text-center z-10 px-4">
+    <div class="text-6xl mb-4 floating">👋</div>
+    <h1 class="text-4xl font-bold mb-2 pulsing">Your account has been deleted.</h1>
+    <p class="text-gray-400 mb-6">We're sad to see you go. Hope to see you again someday!</p>
+    <a href="login.html" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition-all duration-300 shadow-lg hover:scale-105">
+      Create a New Account
+    </a>
+  </div>
+</body>
+</html>

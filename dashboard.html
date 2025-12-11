@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .sidebar {
+      width: 16rem;
+      transform: translateX(0);
+      transition: transform 0.3s ease-in-out;
+    }
+    .sidebar-hidden {
+      transform: translateX(-16rem);
+    }
+    .sidebar-minimized {
+      width: 5rem !important;
+    }
+    .sidebar-minimized h2,
+    .sidebar-minimized span,
+    .sidebar-minimized .text-lg,
+    .sidebar-minimized .text-xl,
+    .sidebar-minimized .font-semibold,
+    .sidebar-minimized .font-bold {
+      display: none;
+    }
+    .sidebar-minimized nav a {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .main-content {
+      margin-left: 16rem;
+      transition: margin-left 0.3s ease-in-out;
+    }
+    .main-content-full {
+      margin-left: 0;
+    }
+    .main-content-minimized {
+      margin-left: 5rem;
+    }
+    .sidebar-icon {
+      transition: transform 0.3s ease;
+    }
+    .sidebar-open .sidebar-icon {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar bg-gray-900 text-white p-6 space-y-6 fixed h-screen shadow-lg">
+      <h2 class="text-3xl font-bold mb-4">Dashboard</h2>
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="flex items-center gap-3 py-2 px-4 bg-blue-600 rounded hover:bg-blue-700 transition">
+          <i class="fas fa-home"></i> <span>Home</span>
+        </a>
+        <a href="reports.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-chart-line"></i> <span>Reports</span>
+        </a>
+        <a href="invoice.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-file-invoice-dollar"></i> <span>Invoice</span>
+        </a>
+        <a href="settings.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-cogs"></i> <span>User Settings</span>
+        </a>
+        <a href="about.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-info-circle"></i> <span>About Us</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content flex-1 p-6 overflow-y-auto h-screen bg-gray-950">
+      <!-- Top Navigation -->
+      <div class="flex justify-between items-center bg-gray-900 p-4 rounded-lg shadow mb-6">
+        <div class="flex items-center gap-4">
+          <!-- Sidebar Toggle Button -->
+          <button id="sidebarToggle" class="text-white bg-gray-800 border border-gray-700 p-2 rounded-md hover:bg-gray-700 transition">
+            <i class="fas fa-bars sidebar-icon"></i>
+          </button>
+          <h1 class="text-2xl font-semibold">Dashboard Overview</h1>
+        </div>
+
+        <!-- Profile Dropdown -->
+        <div class="relative flex items-center space-x-2 profile-container">
+          <div onclick="toggleDropdown()" class="flex items-center cursor-pointer hover:text-blue-400 transition">
+            <i class="fas fa-user-circle text-xl mr-2"></i>
+            <span id="usernameDisplay" class="font-medium">Loading...</span>
+            <i class="fas fa-chevron-down text-xs ml-1 mt-1"></i>
+          </div>
+          <div id="dropdownMenu" class="absolute right-0 top-10 w-32 bg-gray-800 border border-gray-700 rounded-md shadow-lg hidden z-50 py-1">
+            <a href="logout.php" class="block px-3 py-1 text-sm text-white hover:bg-gray-700 transition">Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widgets -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="bg-gray-800 p-6 rounded-lg shadow text-center">
+          <h2 class="text-lg font-semibold text-gray-300 mb-2">Total Sales</h2>
+          <p class="text-3xl font-bold text-white" id="totalSales">$0</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg shadow text-center">
+          <h2 class="text-lg font-semibold text-gray-300 mb-2">Users</h2>
+          <p class="text-3xl font-bold text-white" id="newUsers">0</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg shadow text-center">
+          <h2 class="text-lg font-semibold text-gray-300 mb-2">Orders</h2>
+          <p class="text-3xl font-bold text-white" id="orderCount">0</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow mt-6">
+        <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+        <div class="flex flex-wrap gap-4">
+          <a href="invoice.html" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 transition">+ New Invoice</a>
+          <a href="reports.html" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700 transition">📈 View Reports</a>
+          <a href="settings.html" class="bg-yellow-600 px-4 py-2 rounded hover:bg-yellow-700 transition">⚙️ Update Settings</a>
+        </div>
+      </div>
+
+      <!-- Sales Overview Chart -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow mt-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Sales Overview</h2>
+        <div id="salesChart" class="w-full"></div>
+      </div>
+
+      <!-- Live Clock Widget -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow mt-6 text-center">
+        <h2 class="text-xl font-semibold mb-2">Current Time</h2>
+        <p id="clock" class="text-2xl font-bold"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Sidebar Toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    
+    let sidebarOpen = true;
+    
+    function toggleSidebar() {
+      sidebarOpen = !sidebarOpen;
+      
+      if (sidebarOpen) {
+        sidebar.classList.remove('sidebar-hidden');
+        mainContent.classList.remove('main-content-full');
+        mainContent.classList.add('main-content');
+        sidebarToggle.classList.add('sidebar-open');
+      } else {
+        sidebar.classList.add('sidebar-hidden');
+        mainContent.classList.remove('main-content');
+        mainContent.classList.add('main-content-full');
+        sidebarToggle.classList.remove('sidebar-open');
+      }
+    }
+    
+    sidebarToggle.addEventListener('click', toggleSidebar);
+
+    // Profile dropdown
+    function toggleDropdown() {
+      const dropdown = document.getElementById("dropdownMenu");
+      dropdown.classList.toggle("hidden");
+    }
+
+    // Close dropdown when clicking outside
+    window.addEventListener("click", function (e) {
+      const dropdown = document.getElementById("dropdownMenu");
+      const buttonArea = document.querySelector(".profile-container");
+      if (!buttonArea.contains(e.target)) {
+        dropdown.classList.add("hidden");
+      }
+    });
+
+    // Fetch user name
+    fetch('get_user.php')
+      .then(response => response.json())
+      .then(data => {
+        const usernameDisplay = document.getElementById("usernameDisplay");
+        if (data.user_name) {
+          usernameDisplay.textContent = data.user_name;
+        } else {
+          usernameDisplay.textContent = "Guest";
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching user name:', error);
+        document.getElementById("usernameDisplay").textContent = "Guest";
+      });
+
+    // Dashboard data
+    async function loadDashboardData() {
+      try {
+        const res = await fetch('dashboard_data.php');
+        const data = await res.json();
+
+        document.getElementById("totalSales").textContent = `$${parseFloat(data.total_sales).toLocaleString()}`;
+        document.getElementById("newUsers").textContent = data.new_users;
+        document.getElementById("orderCount").textContent = data.orders;
+
+        const salesData = data.sales_overview || [10000, 15000, 20000, 18000, 22000, 25000];
+        const months = data.sales_labels || ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+
+        const options = {
+          chart: {
+            type: 'line',
+            height: 350,
+            foreColor: '#fff',
+            toolbar: { show: false }
+          },
+          series: [{
+            name: 'Monthly Sales',
+            data: salesData
+          }],
+          xaxis: {
+            categories: months,
+            labels: { style: { colors: '#ccc' } },
+            axisBorder: { color: '#374151' },
+            axisTicks: { color: '#374151' }
+          },
+          yaxis: {
+            labels: {
+              style: { colors: '#ccc' },
+              formatter: val => `$${val.toLocaleString()}`
+            }
+          },
+          colors: ['#3B82F6'],
+          stroke: { curve: 'smooth', width: 3 },
+          fill: {
+            type: 'gradient',
+            gradient: {
+              shade: 'dark',
+              gradientToColors: ['#60A5FA'],
+              shadeIntensity: 1,
+              type: 'horizontal',
+              opacityFrom: 0.7,
+              opacityTo: 0.3,
+            }
+          },
+          tooltip: {
+            theme: 'dark',
+            style: { fontSize: '14px' },
+            y: {
+              formatter: val => `$${val.toLocaleString()}`
+            }
+          },
+          grid: { borderColor: '#374151' }
+        };
+
+        const chart = new ApexCharts(document.querySelector("#salesChart"), options);
+        chart.render();
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      }
+    }
+
+    // Initialize dashboard
+    window.onload = function () {
+      loadDashboardData();
+      setInterval(() => {
+        document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

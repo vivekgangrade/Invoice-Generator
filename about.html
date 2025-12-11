@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .sidebar {
+      width: 16rem;
+      transform: translateX(0);
+      transition: transform 0.3s ease-in-out;
+    }
+    .sidebar-hidden {
+      transform: translateX(-16rem);
+    }
+    .sidebar-minimized {
+      width: 5rem !important;
+    }
+    .sidebar-minimized h2,
+    .sidebar-minimized span,
+    .sidebar-minimized .text-lg,
+    .sidebar-minimized .text-xl,
+    .sidebar-minimized .font-semibold,
+    .sidebar-minimized .font-bold {
+      display: none;
+    }
+    .sidebar-minimized nav a {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .sidebar-minimized nav a i {
+      margin-right: 0;
+    }
+    .main-content {
+      margin-left: 16rem;
+      transition: margin-left 0.3s ease-in-out;
+    }
+    .main-content-full {
+      margin-left: 0;
+    }
+    .sidebar-icon {
+      transition: transform 0.3s ease;
+    }
+    .sidebar-open .sidebar-icon {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar with id="sidebar" added -->
+    <div id="sidebar" class="sidebar bg-gray-900 text-white p-6 space-y-6 fixed h-screen shadow-lg">
+      <h2 class="text-3xl font-bold mb-4">Invoice Hub</h2>
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-home"></i> <span>Home</span>
+        </a>
+        <a href="reports.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-chart-line"></i> <span>Reports</span>
+        </a>
+        <a href="invoice.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-file-invoice-dollar"></i> <span>Invoice</span>
+        </a>
+        <a href="settings.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-cogs"></i> <span>User Settings</span>
+        </a>
+        <a href="about.html" class="flex items-center gap-3 py-2 px-4 bg-blue-600 rounded transition">
+          <i class="fas fa-info-circle"></i> <span>About Us</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Main Content with id="mainContent" added -->
+    <div id="mainContent" class="main-content flex-1 p-6 overflow-y-auto h-screen bg-gray-950">
+      <!-- Top Navigation with Profile Dropdown and Toggle Button -->
+      <div class="flex justify-between items-center bg-gray-900 p-4 rounded-lg shadow mb-6">
+        <div class="flex items-center gap-4">
+          <!-- Sidebar Toggle Button -->
+          <button id="sidebarToggle" class="text-white bg-gray-800 border border-gray-700 p-2 rounded-md hover:bg-gray-700 transition">
+            <i class="fas fa-bars sidebar-icon"></i>
+          </button>
+          <h1 class="text-2xl font-semibold">About Us</h1>
+        </div>
+        
+        <!-- Profile Dropdown -->
+        <div class="relative flex items-center space-x-2 profile-container">
+          <div onclick="toggleDropdown()" class="flex items-center cursor-pointer hover:text-blue-400 transition">
+            <i class="fas fa-user-circle text-xl mr-2"></i>
+            <span id="usernameDisplay" class="font-medium">Loading...</span>
+            <i class="fas fa-chevron-down text-xs ml-1 mt-1"></i>
+          </div>
+          <div id="dropdownMenu" class="absolute right-0 top-10 w-32 bg-gray-800 border border-gray-700 rounded-md shadow-lg hidden z-50 py-1">
+            <a href="logout.php" class="block px-3 py-1 text-sm text-white hover:bg-gray-700 transition">Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="bg-gray-800 p-6 rounded shadow">
+        <h1 class="text-3xl font-semibold mb-4 text-white">About Us</h1>
+
+        <!-- Intro -->
+        <p class="text-gray-300 leading-relaxed mb-4">
+          Welcome to the Invoice Dashboard App – your all-in-one solution for invoicing, reporting, and client management. Whether you're a freelancer, small business owner, or startup, our platform is designed to streamline your financial workflow with ease and efficiency.
+        </p>
+
+        <!-- Mission & Vision -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-gray-700 p-4 rounded border-l-4 border-blue-600">
+            <h2 class="text-xl font-semibold text-blue-400 mb-2">Our Mission</h2>
+            <p class="text-gray-300">
+              To empower businesses by providing a smart, secure, and intuitive platform for managing invoices and financial data.
+            </p>
+          </div>
+          <div class="bg-gray-700 p-4 rounded border-l-4 border-blue-600">
+            <h2 class="text-xl font-semibold text-blue-400 mb-2">Our Vision</h2>
+            <p class="text-gray-300">
+              To become a trusted digital partner for entrepreneurs worldwide by simplifying complex business processes through technology.
+            </p>
+          </div>
+        </div>
+
+        <!-- Technologies Used -->
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold text-white mb-2">Technologies We Use</h2>
+          <ul class="list-disc list-inside text-gray-300">
+            <li><strong>Frontend:</strong> HTML5, Tailwind CSS, JavaScript</li>
+            <li><strong>Backend:</strong> PHP (with XAMPP)</li>
+            <li><strong>Database:</strong> MySQL</li>
+            <li><strong>PDF Generation:</strong> DOMPDF</li>
+          </ul>
+        </div>
+
+        <!-- Team Section -->
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold text-white mb-4">Our Team</h2>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-gray-700 p-4 rounded shadow text-center">
+              <h3 class="font-bold text-lg text-white">Mazid Khan</h3>
+              <p class="text-sm text-gray-400">Full Stack Developer</p>
+            </div>
+            <div class="bg-gray-700 p-4 rounded shadow text-center">
+              <h3 class="font-bold text-lg text-white">Sumanaswi Medapati</h3>
+              <p class="text-sm text-gray-400">Full Stack Developer</p>
+            </div>
+            <div class="bg-gray-700 p-4 rounded shadow text-center">
+              <h3 class="font-bold text-lg text-white">Arman Mev</h3>
+              <p class="text-sm text-gray-400">Full Stack Developer</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="mt-6">
+          <h2 class="text-xl font-semibold text-white mb-2">Contact Us</h2>
+          <ul class="text-gray-300">
+            <li><strong>Email:</strong> shaikhibbu8604@gmail.com</li>
+            <li><strong>Phone:</strong> +91-9554210925</li>
+            <li><strong>Office:</strong> Lovely Professional University, Punjab, India</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById("dropdownMenu");
+        dropdown.classList.toggle("hidden");
+      }
+
+      // Close dropdown when clicking outside
+      window.addEventListener("click", function (e) {
+        const dropdown = document.getElementById("dropdownMenu");
+        const buttonArea = document.querySelector(".profile-container");
+        if (!buttonArea.contains(e.target)) {
+          dropdown.classList.add("hidden");
+        }
+      });
+    // Initialize sidebar state
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the sidebar toggle button
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('mainContent');
+      
+      let sidebarOpen = true;
+      
+      function toggleSidebar() {
+        sidebarOpen = !sidebarOpen;
+        
+        if (sidebarOpen) {
+          sidebar.classList.remove('sidebar-hidden');
+          mainContent.classList.remove('main-content-full');
+          mainContent.classList.add('main-content');
+          sidebarToggle.classList.add('sidebar-open');
+        } else {
+          sidebar.classList.add('sidebar-hidden');
+          mainContent.classList.remove('main-content');
+          mainContent.classList.add('main-content-full');
+          sidebarToggle.classList.remove('sidebar-open');
+        }
+      }
+      
+      // Assign the toggle function to the button
+      sidebarToggle.addEventListener('click', toggleSidebar);
+
+      // Profile dropdown functionality
+
+      // Fetch user name from PHP
+      fetch('get_user.php')
+        .then(response => response.json())
+        .then(data => {
+          const usernameDisplay = document.getElementById("usernameDisplay");
+          if (data.user_name) {
+            usernameDisplay.textContent = data.user_name;
+          } else {
+            usernameDisplay.textContent = "Guest";
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching user name:', error);
+          document.getElementById("usernameDisplay").textContent = "Guest";
+        });
+    });
+  </script>
+</body>
+</html>

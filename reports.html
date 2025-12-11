@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .sidebar {
+      width: 16rem;
+      transform: translateX(0);
+      transition: transform 0.3s ease-in-out;
+    }
+    .sidebar-hidden {
+      transform: translateX(-16rem);
+    }
+    .sidebar-minimized {
+      width: 5rem !important;
+    }
+    .sidebar-minimized h2,
+    .sidebar-minimized span,
+    .sidebar-minimized .text-lg,
+    .sidebar-minimized .text-xl,
+    .sidebar-minimized .font-semibold,
+    .sidebar-minimized .font-bold {
+      display: none;
+    }
+    .sidebar-minimized nav a {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .sidebar-minimized nav a i {
+      margin-right: 0;
+    }
+    .main-content {
+      margin-left: 16rem;
+      transition: margin-left 0.3s ease-in-out;
+    }
+    .main-content-full {
+      margin-left: 0;
+    }
+    .sidebar-icon {
+      transition: transform 0.3s ease;
+    }
+    .sidebar-open .sidebar-icon {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar with id="sidebar" added -->
+    <div id="sidebar" class="sidebar bg-gray-900 text-white p-6 space-y-6 fixed h-screen shadow-lg">
+      <h2 class="text-3xl font-bold mb-4">Invoice Hub</h2>
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-home"></i> <span>Home</span>
+        </a>
+        <a href="reports.html" class="flex items-center gap-3 py-2 px-4 bg-blue-600 rounded transition">
+          <i class="fas fa-chart-line"></i> <span>Reports</span>
+        </a>
+        <a href="invoice.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-file-invoice-dollar"></i> <span>Invoice</span>
+        </a>
+        <a href="settings.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-cogs"></i> <span>User Settings</span>
+        </a>
+        <a href="about.html" class="flex items-center gap-3 py-2 px-4 hover:bg-blue-600 rounded transition">
+          <i class="fas fa-info-circle"></i> <span>About Us</span>
+        </a>
+      </nav>
+    </div>
+    
+
+    <!-- Main Content with id="mainContent" added -->
+    <div id="mainContent" class="main-content flex-1 p-6 overflow-y-auto h-screen bg-gray-950">
+      <!-- Top Navigation -->
+      <div class="flex justify-between items-center bg-gray-900 p-4 rounded-lg shadow mb-6">
+        <div class="flex items-center gap-4">
+          <!-- Updated Sidebar Toggle Button -->
+          <button id="sidebarToggle" class="text-white bg-gray-800 border border-gray-700 p-2 rounded-md hover:bg-gray-700 transition">
+            <i class="fas fa-bars sidebar-icon"></i>
+          </button>
+          <h1 class="text-2xl font-semibold">Reports</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="relative profile-container">
+            <div onclick="toggleDropdown()" class="flex items-center cursor-pointer hover:text-blue-400 transition">
+              <i class="fas fa-user-circle text-xl mr-2"></i>
+              <span id="usernameDisplay" class="font-medium">Loading...</span>
+              <i class="fas fa-chevron-down text-xs ml-1 mt-1"></i>
+            </div>
+            <div id="dropdownMenu" class="absolute right-0 top-10 w-32 bg-gray-800 border border-gray-700 rounded-md shadow-lg hidden z-50 py-1">
+              <a href="logout.php" class="block px-3 py-1 text-sm text-white hover:bg-gray-700 transition">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports Table -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-white">Sales Report</h2>
+          <input type="text" id="searchInput" placeholder="Search reports..." class="px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="overflow-auto">
+          <table class="w-full border-collapse text-center text-sm">
+            <thead>
+              <tr class="bg-blue-700 text-white">
+                <th class="px-4 py-2 border border-gray-700">Date</th>
+                <th class="px-4 py-2 border border-gray-700">Client Name</th>
+                <th class="px-4 py-2 border border-gray-700">Item Name</th>
+                <th class="px-4 py-2 border border-gray-700">Quantity</th>
+                <th class="px-4 py-2 border border-gray-700">Revenue ($)</th>
+                <th class="px-4 py-2 border border-gray-700">CGST ($)</th>
+                <th class="px-4 py-2 border border-gray-700">Discount ($)</th>
+                <th class="px-4 py-2 border border-gray-700">Total With Tax ($)</th>
+                <th class="px-4 py-2 border border-gray-700">Action</th>
+              </tr>
+            </thead>
+            <tbody id="report-body" class="text-gray-200">
+              <!-- JS will populate this -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+    <div class="bg-gray-900 p-6 rounded shadow-lg w-full max-w-md">
+      <h2 class="text-xl font-semibold mb-4">Edit Report</h2>
+      <form id="editForm" class="space-y-4">
+        <input type="hidden" id="edit-id" name="id">
+        <input type="hidden" id="edit-item-index" name="item_index">
+        <div><label class="block text-sm">Date</label><input type="date" id="edit-date" name="date" class="w-full px-3 py-2 rounded bg-gray-800 border border-gray-700 text-white"></div>
+        <div><label class="block text-sm">Client Name</label><input type="text" id="edit-client" name="client_name" class="w-full px-3 py-2 rounded bg-gray-800 border border-gray-700 text-white"></div>
+        <div><label class="block text-sm">Item Name</label><input type="text" id="edit-item" name="item_name" class="w-full px-3 py-2 rounded bg-gray-800 border border-gray-700 text-white"></div>
+        <div><label class="block text-sm">Quantity</label><input type="number" id="edit-quantity" name="quantity" class="w-full px-3 py-2 rounded bg-gray-800 border border-gray-700 text-white"></div>
+        <div><label class="block text-sm">Price</label><input type="number" id="edit-price" name="price" step="0.01" class="w-full px-3 py-2 rounded bg-gray-800 border border-gray-700 text-white"></div>
+        <div><label class="block text-sm">Discount</label><input type="number" id="edit-discount" name="discount" step="0.01" class="w-full px-3 py-2 rounded bg-gray-800 border border-gray-700 text-white"></div>
+        <div><label class="block text-sm">Revenue</label><input type="number" id="edit-revenue" name="revenue" step="0.01" class="w-full px-3 py-2 rounded bg-gray-800 border border-gray-700 text-white" readonly></div>
+        <div class="flex justify-end space-x-2">
+          <button type="button" class="cancel-btn px-4 py-2 bg-gray-700 rounded hover:bg-gray-600">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+<script>
+  function closeEditModal() {
+  const modal = document.getElementById('editModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+window.addEventListener("click", function (e) {
+  const dropdown = document.getElementById("dropdownMenu");
+  const buttonArea = document.querySelector(".profile-container");
+  if (!buttonArea.contains(e.target)) {
+    dropdown.classList.add("hidden");
+  }
+});
+
+function toggleDropdown() {
+  document.getElementById("dropdownMenu").classList.toggle("hidden");
+}
+document.addEventListener('DOMContentLoaded', function () {
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('mainContent');
+  let sidebarOpen = true;
+
+  sidebarToggle.addEventListener('click', function () {
+    sidebarOpen = !sidebarOpen;
+    sidebar.classList.toggle('sidebar-hidden', !sidebarOpen);
+    mainContent.classList.toggle('main-content-full', !sidebarOpen);
+    mainContent.classList.toggle('main-content', sidebarOpen);
+    sidebarToggle.classList.toggle('sidebar-open', sidebarOpen);
+  });
+
+
+  document.querySelector("#editModal .cancel-btn").addEventListener("click", closeEditModal);
+  // Fetch user info
+  fetch('get_user.php')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("usernameDisplay").textContent = data.user_name || "Guest";
+    })
+    .catch(() => {
+      document.getElementById("usernameDisplay").textContent = "Guest";
+    });
+
+  // Load Report Data
+  function loadReportData() {
+    fetch('get_reports.php')
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById("report-body");
+        tbody.innerHTML = "";
+
+        data.forEach((row, index) => {
+          const bgClass = index % 2 === 0 ? "bg-gray-700" : "bg-gray-800";
+          const rowData = encodeURIComponent(JSON.stringify(row));
+
+          const tr = document.createElement("tr");
+          tr.className = bgClass;
+          tr.innerHTML = `
+            <td class="border border-gray-700 px-4 py-2 font-bold">${row.date}</td>
+            <td class="border border-gray-700 px-4 py-2 font-semibold">${row.client_name}</td>
+            <td class="border border-gray-700 px-4 py-2 text-yellow-400">${row.item_name}</td>
+            <td class="border border-gray-700 px-4 py-2 font-bold">${row.quantity}</td>
+            <td class="border border-gray-700 px-4 py-2 text-green-400">$${parseFloat(row.revenue).toFixed(2)}</td>
+            <td class="border border-gray-700 px-4 py-2 text-red-500 font-bold">$${parseFloat(row.cgst).toFixed(2)}</td>
+            <td class="border border-gray-700 px-4 py-2 text-yellow-400">$${parseFloat(row.discount).toFixed(2)}</td>
+            <td class="border border-gray-700 px-4 py-2 font-bold text-green-400">$${parseFloat(row.total_with_tax).toFixed(2)}</td>
+            <td class="border border-gray-700 px-4 py-2">
+              <div class="flex items-center justify-center space-x-2">
+                <button title="Edit report" class="edit-btn bg-yellow-500 text-black px-2 py-1 rounded hover:bg-yellow-600 transition" 
+                        data-row='${rowData}'><i class="fa-solid fa-file-pen"></i></button>
+                <button title="delete report" class="delete-btn bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition" 
+                        data-id="${row.id}" data-index="${row.item_index}"><i class="fa-solid fa-trash"></i></button>
+                <button title="download report" class="download-btn bg-blue-500 text-white px-2 py-1 rounded hover:bg-green-600 transition" 
+                        data-id="${row.id}"><i class="fa-solid fa-download"></i></button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        filterReports(); // reapply search filtering
+      })
+      .catch(() => {
+        document.getElementById("report-body").innerHTML = `<tr><td colspan="10" class="text-red-500 py-4">Error loading data.</td></tr>`;
+      });
+  }
+
+  // Delegated event listener for buttons
+  document.getElementById("report-body").addEventListener("click", function (e) {
+    const target = e.target;
+
+    if (target.classList.contains("edit-btn")) {
+      const rowData = decodeURIComponent(target.getAttribute("data-row"));
+      openEditModal(JSON.parse(rowData));
+    }
+
+    if (target.classList.contains("delete-btn")) {
+      const id = target.getAttribute("data-id");
+      const index = target.getAttribute("data-index");
+      deleteReport(id, index);
+    }
+
+    if (target.classList.contains("download-btn")) {
+      const id = target.getAttribute("data-id");
+      downloadReport(id);
+    }
+  });
+
+  // Modal logic
+  function openEditModal(data) {
+    document.getElementById('edit-id').value = data.id;
+    document.getElementById('edit-item-index').value = data.item_index;
+    document.getElementById('edit-date').value = data.date;
+    document.getElementById('edit-client').value = data.client_name;
+    document.getElementById('edit-item').value = data.item_name;
+    document.getElementById('edit-quantity').value = data.quantity;
+    document.getElementById('edit-price').value = data.price;
+    document.getElementById('edit-discount').value = data.discount || 0;
+    document.getElementById('edit-revenue').value = (data.quantity * data.price).toFixed(2);
+
+    const modal = document.getElementById('editModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  // Move this OUTSIDE of the DOMContentLoaded block
+
+
+  function deleteReport(id, itemIndex) {
+    if (confirm("Are you sure you want to delete this item?")) {
+      fetch('delete_report.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${id}&item_index=${itemIndex}`
+      }).then(() => loadReportData());
+    }
+  }
+
+  function downloadReport(id) {
+    window.open(`download_report.php?id=${id}`, '_blank');
+  }
+
+  function filterReports() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const rows = document.querySelectorAll("#report-body tr");
+    rows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(input) ? "" : "none";
+    });
+  }
+
+  function updateRevenue() {
+    const quantity = parseFloat(document.getElementById('edit-quantity').value) || 0;
+    const price = parseFloat(document.getElementById('edit-price').value) || 0;
+    document.getElementById('edit-revenue').value = (quantity * price).toFixed(2);
+  }
+
+  // Form submission
+  document.getElementById("editForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('update_report.php', {
+      method: 'POST',
+      body: formData
+    }).then(() => {
+      closeEditModal();
+      loadReportData();
+    });
+  });
+
+  document.getElementById("edit-quantity").addEventListener("input", updateRevenue);
+  document.getElementById("edit-price").addEventListener("input", updateRevenue);
+  document.getElementById("searchInput").addEventListener("input", filterReports);
+
+  // Load data initially
+  loadReportData();
+});
+</script>
+</body>
+</html>

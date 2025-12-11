@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-black font-sans">
+
+  <div class="flex w-full max-w-5xl bg-gray-900 rounded-2xl shadow-2xl overflow-hidden text-white">
+    
+    <!-- Left Image Panel -->
+    <div class="w-1/2 hidden md:block relative">
+      <img src="https://img.freepik.com/premium-photo/cybersecurity-secured-login-access-user-typing-password_1150253-398.jpg?w=1380" alt="Login illustration" class="h-full w-full object-cover">
+      <div class="absolute inset-0 bg-black bg-opacity-60 flex flex-col justify-center items-center text-white px-6">
+        <h2 class="text-3xl font-bold mb-4">Welcome Back!</h2>
+        <p class="text-center text-gray-300">Log in to access your dashboard and manage your invoices effortlessly.</p>
+      </div>
+    </div>
+
+    <!-- Right Login Panel -->
+    <div class="w-full md:w-1/2 p-8 space-y-6">
+      <h2 class="text-3xl font-bold text-center text-white">Login</h2>
+
+      <form id="login-form" class="space-y-4">
+        <input type="hidden" name="action" value="login">
+        
+        <div>
+          <label class="block text-gray-300 mb-1">Email</label>
+          <input type="email" name="email" class="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="you@example.com" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-1">Password</label>
+          <input type="password" name="password" class="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Log in</button>
+        <p id="login-message" class="text-red-400 text-center text-sm"></p>
+      </form>
+
+      <div class="text-center text-sm text-gray-300">
+        Don't have an account?
+        <a href="#" onclick="openSignupModal()" class="text-blue-400 hover:underline font-medium">Sign up</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div id="signup-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden justify-center items-center z-50">
+    <div class="bg-gray-900 p-6 rounded-xl w-96 shadow-xl animate-fadeIn text-white">
+      <h2 class="text-2xl font-bold text-center mb-4">Create Account</h2>
+
+      <form id="signup-form" class="space-y-4">
+        <input type="hidden" name="action" value="register">
+
+        <div>
+          <label class="block text-gray-300 mb-1">Name</label>
+          <input type="text" name="name" class="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="John Doe" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-1">Email</label>
+          <input type="email" name="email" class="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="you@example.com" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 mb-1">Password</label>
+          <input type="password" name="password" class="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Create password" required>
+        </div>
+
+        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">Sign up</button>
+        <p id="signup-message" class="text-center text-green-400 text-sm mt-2"></p>
+        <button onclick="closeSignupModal()" class="block w-full text-red-400 text-sm mt-3 hover:underline text-center">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+  </style>
+
+  <!-- JS -->
+  <script>
+    function openSignupModal() {
+      document.getElementById("signup-modal").classList.remove("hidden");
+      document.getElementById("signup-modal").classList.add("flex");
+    }
+
+    function closeSignupModal() {
+      document.getElementById("signup-modal").classList.remove("flex");
+      document.getElementById("signup-modal").classList.add("hidden");
+    }
+
+    document.getElementById("signup-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      fetch("login.php", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("signup-message").innerText = data;
+        if (data.includes("successfully")) {
+          setTimeout(() => window.location.href = "login.html", 2000);
+        }
+      });
+    });
+
+    document.getElementById("login-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      fetch("login.php", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.text())
+      .then(data => {
+        if (data === "success") {
+          window.location.href = "dashboard.html";
+        } else {
+          document.getElementById("login-message").innerText = data;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
